@@ -1,0 +1,88 @@
+<html>
+<head>
+<title>README.md</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #859900;}
+.s1 { color: #839496;}
+.s2 { color: #839496;}
+.s3 { color: #586e75; font-style: italic;}
+</style>
+</head>
+<body bgcolor="#002b36">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+README.md</font>
+</center></td></tr></table>
+<pre><span class="s0"># </span><span class="s2">RabbitMQ - Demo app</span>
+
+<span class="s0">## </span><span class="s2">Intro</span>
+
+Esta aplicação serve de referência para uso de processamento assíncrono no Sistema FIEG.
+
+O processamento é realizado através de eventos <span class="s1">(</span><span class="s2">Java EE CDI</span><span class="s1">)</span><span class="s2">, sendo que o servidor RabbitMQ é o servidor que irá gerenciar as filas. Cada mensagem da fila contém um evento que será registrado via </span><span class="s3">`</span><span class="s2">SendEvent</span><span class="s3">` </span><span class="s2">e processado pelo </span><span class="s3">`</span><span class="s2">ReceiveEvent</span><span class="s3">`</span><span class="s2">.</span>
+
+
+<span class="s0">## </span><span class="s2">Visão geral</span>
+
+<span class="s0">### </span><span class="s2">Propósito</span>
+
+O propósito desta aplicação é receber uma requisição REST <span class="s1">(</span><span class="s2">POST</span><span class="s1">) </span><span class="s2">com dados de usuário e simular um processamento da requisição. </span>
+
+<span class="s0">### </span><span class="s2">Configuração</span>
+
+<span class="s0">* </span><span class="s2">Classe </span><span class="s3">`</span><span class="s2">s.r.r.config.RabbitBinder</span><span class="s3">` </span><span class="s2">- Nesta classe são  realizadas as associações </span><span class="s1">(</span><span class="s2">bind</span><span class="s1">) </span><span class="s2">de eventos com o CDI. O </span><span class="s3">`</span><span class="s2">SendEvent</span><span class="s3">` </span><span class="s2">será atrelado a uma Exchange enquanto o </span><span class="s3">`</span><span class="s2">ReceiveEvent</span><span class="s3">` </span><span class="s2">será atrelada a uma queue. Ver mais em</span><span class="s1">: https://www.rabbitmq.com/tutorials/amqp-concepts.html#exchanges</span>
+<span class="s0">* </span><span class="s2">Classe  </span><span class="s3">`</span><span class="s2">s.r.r.config.BindingInitializer</span><span class="s3">` </span><span class="s2">- Nesta classe são feitas as configurações e associação do </span><span class="s3">`</span><span class="s2">RabbitBinder</span><span class="s3">` </span><span class="s2">à conexão com o servidor de mensageria</span><span class="s1">(</span><span class="s2">RabbitMQ</span><span class="s1">)</span>
+<span class="s0">* </span><span class="s2">Classe </span><span class="s3">`</span><span class="s2">s.r.r.user.User</span><span class="s3">` </span><span class="s2">- Classe que representa um usuário de um sistema ordinário</span>
+<span class="s0">* </span><span class="s2">Classes </span><span class="s3">`</span><span class="s2">s.r.r.event.ReceiveEvent s.r.r.event.SendEvent</span><span class="s3">` </span><span class="s2">- Classes que representam as mensagem que são recebidas e enviadas via servidor RabbitMQ</span>
+<span class="s0">* </span><span class="s2">Classe - </span><span class="s3">`</span><span class="s2">s.r.r.user.UserEndpoint</span><span class="s3">` </span><span class="s2">- Classe que representa o endpoint REST que receberá o POST para processamento de usuários</span>
+<span class="s0">* </span><span class="s2">Classe - </span><span class="s3">`</span><span class="s2">s.r.r.user.UserService</span><span class="s3">` </span><span class="s2">- Classe que representa o motor de negócios suas funções são</span><span class="s1">:</span>
+    <span class="s0">* </span><span class="s2">Enviar mensagens, recebidas do endpoint,  para o servidor RabbitMQ através do método </span><span class="s3">`</span><span class="s2">sendEvent</span><span class="s3">`</span>
+    <span class="s0">* </span><span class="s2">Receber mensagens e, recebidas do servidor RabbitMQ, processá-las. Neste caso há uma simulação de processamento.</span>
+<span class="s0">* </span><span class="s2">Arquivo </span><span class="s3">`</span><span class="s2">src/main/resources/project-defaults.yml</span><span class="s3">` </span><span class="s2">- Arquivo de configuração do projeto. Nele estão contidas as System Properties do projeto. </span>
+    <span class="s0">* </span><span class="s1">**</span><span class="s2">OBS</span><span class="s1">**: </span><span class="s2">Atentar para as properties </span><span class="s3">`</span><span class="s2">rabbitdemo.rabbitmq.</span><span class="s1">*</span><span class="s3">`</span><span class="s2">. Estas estão lendo configurações setadas nas variáveis de ambiente da estação de trabalho</span>
+
+
+<span class="s0">### </span><span class="s2">Eventos</span>
+
+A atual implementação é baseada em eventos sendo os fluxos<span class="s1">:</span>
+
+
+<span class="s0">* </span><span class="s2">Envio</span>
+<span class="s1">![</span><span class="s2">Diagrama_de_envio</span><span class="s1">](</span><span class="s2">diagrama-envio.jpg</span><span class="s1">)</span>
+
+<span class="s0">* </span><span class="s2">Recebimento</span>
+<span class="s1">![</span><span class="s2">Diagrama_de_recebimento</span><span class="s1">](</span><span class="s2">diagrama-recebimento.jpg</span><span class="s1">)</span>
+
+<span class="s2">É importante ressaltar que, neste exemplo, o processamento é assíncrono sendo 1 mensagem processada por vez. Caso seja necessário implementar um endpoint que responda somente após o processamento de mensagens será necessário utilizar o AsynchronousResponse </span><span class="s1">(https://docs.jboss.org/resteasy/docs/3.0.4.Final/userguide/html_single/#Asynchronous_HTTP_Request_Processing)</span><span class="s2">.</span>
+
+Por enquanto, não é possível utilizar o <span class="s1">[</span><span class="s2">CompletableFuture</span><span class="s1">](https://docs.jboss.org/resteasy/docs/3.5.1.Final/userguide/html/Asynchronous_HTTP_Request_Processing.html)</span><span class="s2">, pois o RestEasy na versão dos nossos servidores não suporta este modo de processamento.</span>
+
+<span class="s0">### </span><span class="s2">Recuperação de mensagens</span>
+
+Nesta aplicação exemplo, caso a aplicação pare ou o servidor caia enquanto uma mensagem estiver sendo processada<span class="s1">(</span><span class="s2">Recebimento</span><span class="s1">)</span><span class="s2">, esta permanecerá na fila e será reprocessada após a aplicação voltar à sua operação normal.</span>
+
+
+<span class="s0">## </span><span class="s2">Testando aplicação</span>
+
+<span class="s0">### </span><span class="s2">SHELL - CURL</span>
+
+<span class="s3">```bash</span>
+#Simulando 150 requisições
+for i in {1..150}; do curl --request POST --url http://localhost:8080/rabbitdemo/api/users --header 'content-type: application/json' --data '{&quot;name&quot;: &quot;teste&quot;,&quot;login&quot;: &quot;teste&quot;,&quot;password&quot;: &quot;teste&quot;}'; done;
+```
+
+<span class="s0">### </span><span class="s2">WRK2 </span>
+<span class="s3">```bash</span>
+#Utilizando o aplicativo (LINUX) wrk2 150 requisições
+wrk2 -c 150 -t1 -s post.lua -d 5s --rate 1 &quot;http://localhost:8080/rabbitdemo/api/users&quot;
+```
+
+<span class="s0">## </span><span class="s2">TODO </span>
+
+<span class="s0">* </span><span class="s2">Exemplo com Asyncronous response</span>
+<span class="s0">* </span><span class="s2">Exemplo com autoAck</span>
+</pre>
+</body>
+</html>
