@@ -1,0 +1,11 @@
+rabbitdemo.rabbitmq.server.host: ${env.RABBITMQ_SERVER}
+rabbitdemo.rabbitmq.server.port: ${env.RABBITMQ_PORT}
+rabbitdemo.rabbitmq.server.username: ${env.RABBITMQ_USR}
+rabbitdemo.rabbitmq.server.password: ${env.RABBITMQ_PWD}
+rabbitdemo.rabbitmq.server.vhost: ${env.RABBITMQ_VHOST}
+rabbitdemo.USER_QUEUE: "USER_QUEUE"
+rabbitdemo.USER_EXCHANGE: ""
+
+swarm:
+  context:
+    path: /rabbitdemo
